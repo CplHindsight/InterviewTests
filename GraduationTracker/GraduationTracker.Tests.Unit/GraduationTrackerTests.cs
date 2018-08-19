@@ -9,67 +9,19 @@ namespace GraduationTracker.Tests.Unit
     public class GraduationTrackerTests
     {
         [TestMethod]
-        public void TestHasCredits()
+        public void IntegrationTestHasCredits()
         {
-            var tracker = new GraduationTracker();
+						var tracker = new GraduationTracker();
 
-            var diploma = new Diploma
-            {
-                Id = 1,
-                Credits = 4,
-                Requirements = new int[] { 100, 102, 103, 104 }
-            };
-
-            var students = new[]
-            {
-               new Student
-               {
-                   Id = 1,
-                   Courses = new Course[]
-                   {
-                        new Course{Id = 1, Name = "Math", Mark=95 },
-                        new Course{Id = 2, Name = "Science", Mark=95 },
-                        new Course{Id = 3, Name = "Literature", Mark=95 },
-                        new Course{Id = 4, Name = "Physichal Education", Mark=95 }
-                   }
-               },
-               new Student
-               {
-                   Id = 2,
-                   Courses = new Course[]
-                   {
-                        new Course{Id = 1, Name = "Math", Mark=80 },
-                        new Course{Id = 2, Name = "Science", Mark=80 },
-                        new Course{Id = 3, Name = "Literature", Mark=80 },
-                        new Course{Id = 4, Name = "Physichal Education", Mark=80 }
-                   }
-               },
-            new Student
-            {
-                Id = 3,
-                Courses = new Course[]
-                {
-                    new Course{Id = 1, Name = "Math", Mark=50 },
-                    new Course{Id = 2, Name = "Science", Mark=50 },
-                    new Course{Id = 3, Name = "Literature", Mark=50 },
-                    new Course{Id = 4, Name = "Physichal Education", Mark=50 }
-                }
-            },
-            new Student
-            {
-                Id = 4,
-                Courses = new Course[]
-                {
-                    new Course{Id = 1, Name = "Math", Mark=40 },
-                    new Course{Id = 2, Name = "Science", Mark=40 },
-                    new Course{Id = 3, Name = "Literature", Mark=40 },
-                    new Course{Id = 4, Name = "Physichal Education", Mark=40 }
-                }
-            }
-
-
-            //tracker.HasGraduated()
-        };
+						var diploma = Repository.GetDiploma(1);
+						
+						var students = new[]
+						{
+								Repository.GetStudent(1),
+								Repository.GetStudent(2),
+								Repository.GetStudent(3),
+								Repository.GetStudent(4)
+						};
             
             var graduated = new List<Tuple<bool, STANDING>>();
 
@@ -77,12 +29,34 @@ namespace GraduationTracker.Tests.Unit
             {
                 graduated.Add(tracker.HasGraduated(diploma, student));      
             }
-
-            
-            Assert.IsFalse(graduated.Any());
+						
+            Assert.IsTrue(graduated.Any());
 
         }
 
+				[TestMethod]
+				public void IntegrationTestGraduationFailure()
+				{
+						var tracker = new GraduationTracker();
 
-    }
+						var diploma = Repository.GetDiploma(1);
+
+						var students = new[]
+						{
+								Repository.GetStudent(1),
+								Repository.GetStudent(2),
+								Repository.GetStudent(3),
+								Repository.GetStudent(4)
+						};
+
+						var graduated = new List<Tuple<bool, STANDING>>();
+
+						foreach (var student in students) {
+								graduated.Add(tracker.HasGraduated(diploma, student));
+						}
+
+						Assert.IsFalse(graduated.Any(m => m.Item2 == STANDING.None));
+
+				}
+		}
 }
